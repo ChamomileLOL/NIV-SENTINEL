@@ -3,7 +3,7 @@ import io from 'socket.io-client';
 import './App.css';
 
 // TRAP: You must point to the Backend Port (5000), not the React Port (3000)
-const socket = io('http://localhost:5000');
+const socket = io('https://niv-sentinel.onrender.com');
 
 function App() {
   const [vitals, setVitals] = useState({ patientId: 'WAITING...', spo2: 100, bpm: 0 });
