@@ -1,0 +1,83 @@
+body {
+  background-color: #000;
+  color: #0f0; /* Matrix Green */
+  font-family: 'Courier New', monospace;
+  margin: 0;
+  overflow: hidden;
+}
+
+.dashboard {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.flash-red {
+  animation: flash 1s infinite;
+  background-color: #300;
+}
+
+@keyframes flash {
+  0% { background-color: #300; }
+  50% { background-color: #500; }
+  100% { background-color: #300; }
+}
+
+.header {
+  width: 100%;
+  text-align: center;
+  border-bottom: 2px solid #0f0;
+  margin-bottom: 50px;
+}
+
+.card {
+  border: 2px solid #0f0;
+  padding: 40px;
+  width: 400px;
+  text-align: center;
+  background: #001100;
+}
+
+.patient-id {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  border-bottom: 1px dashed #0f0;
+}
+
+.vital-row {
+  display: flex;
+  justify-content: space-around;
+}
+
+.vital-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.value {
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+.value.danger {
+  color: #f00; /* Red */
+  text-shadow: 0 0 10px #f00;
+}
+
+.alert-box {
+  margin-top: 20px;
+  color: #fff;
+  background: #f00;
+  padding: 20px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  animation: shake 0.5s infinite;
+}
+
+@keyframes shake {
+  0% { transform: translate(1px, 1px); }
+  50% { transform: translate(-1px, -1px); }
+  100% { transform: translate(1px, 1px); }
+}
