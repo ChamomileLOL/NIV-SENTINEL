@@ -21,6 +21,33 @@ connectDB();
 
 // ROUTES
 app.use('/api/zone', zoneRoutes);
+// --- EMERGENCY HTTP INGRESS (FOR CLOUD DEPLOYMENT) ---
+// Since Render blocks UDP Port 6000, we use HTTP POST to receive vitals
+app.post('/api/vitals', (req, res) => {
+    const { patientId, spo2, bpm } = req.body;
+
+    // 1. LOG
+    console.log(`[HTTP SIGNAL] ${patientId} | SpO2: ${spo2}% | BPM: ${bpm}`);
+
+    // 2. BROADCAST TO FRONTEND (Socket.io)
+    io.emit('vital-update', {
+        patientId,
+        spo2: parseInt(spo2),
+        bpm: parseInt(bpm),
+        timestamp: new Date()
+    });
+
+    // 3. CRITICAL ALERT
+    if (parseInt(spo2) < 90) {
+        io.emit('critical-alert', {
+            message: `CRITICAL HYPOXIA: PATIENT ${patientId}`,
+            level: 'RED'
+        });
+    }
+
+    res.status(200).send('OK');
+});
+// -----------------------------------------------------
 
 // --- THE REAL-TIME BRIDGE (SOCKET.IO) ---
 const io = new Server(server, {
