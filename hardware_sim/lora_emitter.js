@@ -1,30 +1,38 @@
-const dgram = require('dgram');
-const client = dgram.createSocket('udp4');
+// NEW HARDWARE SIMULATOR (HTTP VERSION)
+// Node 18+ has native 'fetch', no need for axios.
 
-// CONFIG
-const SERVER_PORT = 6000;
-const SERVER_HOST = 'localhost';
+const SERVER_URL = 'https://niv-sentinel.onrender.com/api/vitals'; // TARGET THE CLOUD
 const PATIENT_ID = 'NIV-ZERO-001';
 
-console.log("[HARDWARE] Sensor Activated. Attaching to Patient...");
+console.log(`[HARDWARE] Sensor Activated. Targeting: ${SERVER_URL}`);
 
-// Simulate Vitals Stream
-setInterval(() => {
-    // Randomize vitals to simulate struggle
-    // TRAP: SpO2 drops randomly to test your alert logic
+async function sendVitals() {
+    // Randomize vitals
     const spo2 = Math.floor(Math.random() * (99 - 85 + 1) + 85); 
     const bpm = Math.floor(Math.random() * (120 - 60 + 1) + 60);
 
-    const payload = `${PATIENT_ID}:${spo2}:${bpm}`;
-    const message = Buffer.from(payload);
+    const payload = {
+        patientId: PATIENT_ID,
+        spo2: spo2,
+        bpm: bpm
+    };
 
-    client.send(message, SERVER_PORT, SERVER_HOST, (err) => {
-        if (err) {
-            console.error('[HARDWARE FAILURE] Transmission failed.');
-            client.close();
+    try {
+        const response = await fetch(SERVER_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            console.log(`[TX SUCCESS] ${PATIENT_ID} -> SpO2: ${spo2} | BPM: ${bpm}`);
         } else {
-            console.log(`[TX] Sent Packet: ${payload}`);
+            console.log(`[TX FAILED] Server Error: ${response.status}`);
         }
-    });
+    } catch (error) {
+        console.log(`[TX ERROR] Connection Failed: Is the Server Awake?`);
+    }
+}
 
-}, 2000); // Send data every 2 seconds
+// Send every 2 seconds
+setInterval(sendVitals, 2000);
